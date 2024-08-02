@@ -1,6 +1,6 @@
-package com.github.kusaanko.youtubelivechat;
+package com.github.kusaanko.youtubelivechat
 
-public enum ChatItemType {
+enum class ChatItemType {
     MESSAGE,
     PAID_MESSAGE,
     PAID_STICKER,

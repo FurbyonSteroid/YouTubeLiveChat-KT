@@ -1,6 +1,6 @@
-package com.github.kusaanko.youtubelivechat;
+package com.github.kusaanko.youtubelivechat
 
-public enum IdType {
-	VIDEO,
-	CHANNEL,
+enum class IdType {
+    VIDEO,
+    CHANNEL,
 }

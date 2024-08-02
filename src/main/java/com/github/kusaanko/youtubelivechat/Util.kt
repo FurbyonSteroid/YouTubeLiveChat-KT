@@ -1,289 +1,274 @@
-package com.github.kusaanko.youtubelivechat;
+package com.github.kusaanko.youtubelivechat
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
+import com.google.gson.Gson
+import com.google.gson.JsonElement
+import java.io.*
+import java.net.HttpURLConnection
+import java.net.URL
+import java.nio.charset.StandardCharsets
+import java.util.*
 
-import java.io.*;
-import java.math.BigInteger;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+object Util {
+    private var gson = Gson()
 
-@SuppressWarnings("unchecked")
-public class Util {
-    private static Gson gson;
-
-    static {
-        gson = new Gson();
-    }
-
-    public static String toJSON(Map<String, Object> json) {
-        StringBuilder js = new StringBuilder();
-        js.append("{");
-        for (String key : json.keySet()) {
-            js.append("'").append(key).append("': ");
-            Object d = json.get(key);
-            if (d instanceof Byte ||
-                    d instanceof Character ||
-                    d instanceof Short ||
-                    d instanceof Integer ||
-                    d instanceof Long ||
-                    d instanceof Float ||
-                    d instanceof Double ||
-                    d instanceof Boolean) {
-                js.append(d);
-            } else if (d instanceof Map) {
-                js.append(toJSON((Map<String, Object>) d));
-            } else {
-                js.append("\"").append(d.toString().replace("\"", "\\\"").replace("\\", "\\\\")).append("\"");
+    fun toJSON(json: Map<String, Any?>): String {
+        val js = StringBuilder()
+        js.append("{")
+        for (key in json.keys) {
+            js.append("'").append(key).append("': ")
+            when (val d = json[key]) {
+                is Byte, is Char, is Short, is Int, is Long, is Float, is Double, is Boolean -> js.append(d)
+                is Map<*, *> -> js.append(toJSON(d as Map<String, Any?>))
+                else -> js.append("\"").append(d.toString().replace("\"", "\\\"").replace("\\", "\\\\")).append("\"")
             }
-            js.append(", ");
+            js.append(", ")
         }
-        return js.substring(0, js.length() - 2) + "}";
+        return js.substring(0, js.length - 2) + "}"
     }
 
-    public static Map<String, Object> toJSON(String json) {
-        if (!json.startsWith("{")) {
-            throw new IllegalArgumentException("This is not json(map)!");
-        }
-        Map<String, Object> result = gson.fromJson(json, Map.class);
-        return result;
+    @JvmStatic
+    fun toJSON(json: String): Map<String, Any> {
+        require(json.startsWith("{")) { "This is not json(map)!" }
+        val result: Map<String, Any> = gson.fromJson<Map<String, Any>>(
+            json,
+            MutableMap::class.java
+        )
+        return result
     }
 
-    public static Map<String, Object> getJSONMap(Map<String, Object> json, String... keys) {
-        Map<String, Object> map = json;
-        for (String key : keys) {
+    fun getJSONMap(json: Map<String, Any>, vararg keys: String): Map<String, Any> {
+        var map = json
+        for (key in keys) {
             if (map.containsKey(key)) {
-                map = (Map<String, Object>) map.get(key);
+                map = map[key] as Map<String, Any>
             } else {
-                return null;
+                return emptyMap()
             }
         }
-        return map;
+        return map
     }
 
-    public static Map<String, Object> getJSONMap(Map<String, Object> json, Object... keys) {
-        Map<String, Object> map = json;
-        List<Object> list = null;
-        for (Object key : keys) {
+    fun getJSONMap(json: Map<String, *>?, vararg keys: Any): Map<String, *>? {
+        var map = json
+        var list: List<*>? = null
+        for (key in keys) {
             if (map != null) {
                 if (map.containsKey(key.toString())) {
-                    Object value = map.get(key.toString());
-                    if (value instanceof List) {
-                        list = (List<Object>) value;
-                        map = null;
+                    val value = map[key.toString()]
+                    if (value is List<*>) {
+                        list = value
+                        map = null
                     } else {
-                        map = (Map<String, Object>) value;
+                        map = value as Map<String, *>
                     }
                 } else {
-                    return null;
+                    return null
                 }
             } else {
-                map = (Map<String, Object>) list.get((int) key);
-                list = null;
+                map = list!![key as Int] as Map<String, *>
+                list = null
             }
         }
-        return map;
+        return map
     }
 
-    public static List<Object> getJSONList(Map<String, Object> json, String listKey, String... keys) {
-        Map<String, Object> map = getJSONMap(json, keys);
+    fun getJSONList(json: Map<String, Any>, listKey: String, vararg keys: String): List<Any>? {
+        val map = getJSONMap(json, *keys)
         if (map != null && map.containsKey(listKey)) {
-            return (List<Object>) map.get(listKey);
+            return map[listKey] as List<Any>
         }
-        return null;
+        return null
     }
 
-    public static Object getJSONValue(Map<String, Object> json, String key) {
+    fun getJSONValue(json: Map<String, Any>, key: String): Any? {
         if (json != null && json.containsKey(key)) {
-            return json.get(key);
+            return json[key]
         }
-        return null;
+        return null
     }
 
-    public static String getJSONValueString(Map<String, Object> json, String key) {
-        Object value = getJSONValue(json, key);
+    fun getJSONValueString(json: Map<String, Any>, key: String): String? {
+        val value = getJSONValue(json, key)
         if (value != null) {
-            return value.toString();
+            return value.toString()
         }
-        return null;
+        return null
     }
 
-    public static boolean getJSONValueBoolean(Map<String, Object> json, String key) {
-        Object value = getJSONValue(json, key);
+    fun getJSONValueBoolean(json: Map<String, Any>, key: String): Boolean {
+        val value = getJSONValue(json, key)
         if (value != null) {
-            return (boolean) value;
+            return value as Boolean
         }
-        return false;
+        return false
     }
 
-    public static long getJSONValueLong(Map<String, Object> json, String key) {
-        Object value = getJSONValue(json, key);
+    fun getJSONValueLong(json: Map<String, Any>, key: String): Long {
+        val value = getJSONValue(json, key)
         if (value != null) {
-            return ((Double) value).longValue();
+            return (value as Double).toLong()
         }
-        return 0;
+        return 0
     }
 
-    public static int getJSONValueInt(Map<String, Object> json, String key) {
-        return (int) getJSONValueLong(json, key);
+    fun getJSONValueInt(json: Map<String, Any>, key: String): Int {
+        return getJSONValueLong(json, key).toInt()
     }
 
-    public static String getPageContent(String url, Map<String, String> header) throws IOException {
-        URL u = new URL(url);
-        HttpURLConnection connection = (HttpURLConnection) u.openConnection();
-        putRequestHeader(header);
-        for (String key : header.keySet()) {
-            connection.setRequestProperty(key, header.get(key));
+    @Throws(IOException::class)
+    fun getPageContent(url: String, header: MutableMap<String, String>): String? {
+        val u = URL(url)
+        val connection = u.openConnection() as HttpURLConnection
+        putRequestHeader(header)
+        for (key in header.keys) {
+            connection.setRequestProperty(key, header[key])
         }
-        connection.connect();
+        connection.connect()
         try {
-            int responseCode = connection.getResponseCode();
+            val responseCode = connection.responseCode
             if (responseCode == HttpURLConnection.HTTP_OK) { // success
-                InputStream inputStream = connection.getInputStream();
-                byte[] buff = new byte[8192];
-                int len;
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                while ((len = inputStream.read(buff)) != -1) {
-                    baos.write(buff, 0, len);
+                val inputStream = connection.inputStream
+                val buff = ByteArray(8192)
+                var len: Int
+                val baos = ByteArrayOutputStream()
+                while ((inputStream.read(buff).also { len = it }) != -1) {
+                    baos.write(buff, 0, len)
                 }
-                inputStream.close();
-                String content = baos.toString(StandardCharsets.UTF_8.toString());
-                baos.close();
-                return content;
+                inputStream.close()
+                val content = baos.toString(StandardCharsets.UTF_8.toString())
+                baos.close()
+                return content
             }
-        } catch (IOException exception) {
-            throw new IOException("Error during http request ", exception);
+        } catch (exception: IOException) {
+            throw IOException("Error during http request ", exception)
         }
-        return null;
+        return null
     }
 
-    public static String getPageContentWithJson(String url, String data, Map<String, String> header) throws IOException {
-        URL u = new URL(url);
-        HttpURLConnection connection = (HttpURLConnection) u.openConnection();
-        putRequestHeader(header);
-        header.put("Content-Type", "application/json");
-        header.put("Content-Length", String.valueOf(data.length()));
-        for (String key : header.keySet()) {
-            connection.setRequestProperty(key, header.get(key));
+    @Throws(IOException::class)
+    fun getPageContentWithJson(url: String, data: String, header: MutableMap<String, String>): String? {
+        val u = URL(url)
+        val connection = u.openConnection() as HttpURLConnection
+        putRequestHeader(header)
+        header["Content-Type"] = "application/json"
+        header["Content-Length"] = data.length.toString()
+        for (key in header.keys) {
+            connection.setRequestProperty(key, header[key])
         }
-        connection.setRequestMethod("POST");
-        connection.setDoOutput(true);
-        OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8);
-        writer.write(data);
-        writer.close();
-        connection.connect();
+        connection.requestMethod = "POST"
+        connection.doOutput = true
+        val writer = OutputStreamWriter(connection.outputStream, StandardCharsets.UTF_8)
+        writer.write(data)
+        writer.close()
+        connection.connect()
         try {
-            int responseCode = connection.getResponseCode();
+            val responseCode = connection.responseCode
             if (responseCode == HttpURLConnection.HTTP_OK) { // success
-                InputStream inputStream = connection.getInputStream();
-                byte[] buff = new byte[8192];
-                int len;
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                while ((len = inputStream.read(buff)) != -1) {
-                    baos.write(buff, 0, len);
+                val inputStream = connection.inputStream
+                val buff = ByteArray(8192)
+                var len: Int
+                val baos = ByteArrayOutputStream()
+                while ((inputStream.read(buff).also { len = it }) != -1) {
+                    baos.write(buff, 0, len)
                 }
-                inputStream.close();
-                String content = baos.toString(StandardCharsets.UTF_8.toString());
-                baos.close();
-                return content;
+                inputStream.close()
+                val content = baos.toString(StandardCharsets.UTF_8.toString())
+                baos.close()
+                return content
             }
-        } catch (IOException exception) {
-            throw new IOException("Error during http request ", exception);
+        } catch (exception: IOException) {
+            throw IOException("Error during http request ", exception)
         }
-        return null;
+        return null
     }
 
-    public static void sendHttpRequestWithJson(String url, String data, Map<String, String> header) throws IOException {
-        URL u = new URL(url);
-        HttpURLConnection connection = (HttpURLConnection) u.openConnection();
-        putRequestHeader(header);
-        header.put("Content-Type", "application/json");
-        header.put("Content-Length", String.valueOf(data.length()));
-        for (String key : header.keySet()) {
-            connection.setRequestProperty(key, header.get(key));
+    @Throws(IOException::class)
+    fun sendHttpRequestWithJson(url: String, data: String, header: MutableMap<String, String>) {
+        val u = URL(url)
+        val connection = u.openConnection() as HttpURLConnection
+        putRequestHeader(header)
+        header["Content-Type"] = "application/json"
+        header["Content-Length"] = data.length.toString()
+        for (key in header.keys) {
+            connection.setRequestProperty(key, header[key])
         }
-        connection.setRequestMethod("POST");
-        connection.setDoOutput(true);
-        OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8);
-        writer.write(data);
-        writer.close();
-        connection.connect();
+        connection.requestMethod = "POST"
+        connection.doOutput = true
+        val writer = OutputStreamWriter(connection.outputStream, StandardCharsets.UTF_8)
+        writer.write(data)
+        writer.close()
+        connection.connect()
         try {
-            connection.getInputStream();
-            connection.disconnect();
-        } catch (IOException e) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
-            String s;
-            StringBuilder str = new StringBuilder();
-            while ((s = reader.readLine()) != null) {
-                str.append(s);
+            connection.inputStream
+            connection.disconnect()
+        } catch (e: IOException) {
+            val reader = BufferedReader(InputStreamReader(connection.errorStream))
+            var s: String
+            val str = StringBuilder()
+            while ((reader.readLine().also { s = it }) != null) {
+                str.append(s)
             }
-            connection.disconnect();
-            throw new IOException(str.toString(), e);
+            connection.disconnect()
+            throw IOException(str.toString(), e)
         }
     }
 
-    private static void putRequestHeader(Map<String, String> header) {
-        header.put("Accept-Charset", "utf-8");
-        header.put("User-Agent", YouTubeLiveChat.userAgent);
+    private fun putRequestHeader(header: MutableMap<String, String>) {
+        header["Accept-Charset"] = "utf-8"
+        header["User-Agent"] = YouTubeLiveChat.userAgent
     }
 
-    public static String generateClientMessageId() {
-        String base = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-";
-        StringBuilder sb = new StringBuilder();
-        Random random = new Random();
+    @JvmStatic
+    fun generateClientMessageId(): String {
+        val base = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-"
+        val sb = StringBuilder()
+        val random = Random()
 
-        for (int i = 0; i < 26; i++) {
-            sb.append(base.charAt(random.nextInt(base.length())));
+        for (i in 0..25) {
+            sb.append(base[random.nextInt(base.length)])
         }
 
-        return sb.toString();
+        return sb.toString()
     }
 
-    public static JsonElement searchJsonElementByKey(String key, JsonElement jsonElement) {
-
-        JsonElement value = null;
+    @JvmStatic
+    fun searchJsonElementByKey(key: String, jsonElement: JsonElement): JsonElement? {
+        var value: JsonElement? = null
 
         // If input is an array, iterate through each element
-        if (jsonElement.isJsonArray()) {
-            for (JsonElement jsonElement1 : jsonElement.getAsJsonArray()) {
-                value = searchJsonElementByKey(key, jsonElement1);
+        if (jsonElement.isJsonArray) {
+            for (jsonElement1 in jsonElement.asJsonArray) {
+                value = searchJsonElementByKey(key, jsonElement1)
                 if (value != null) {
-                    return value;
+                    return value
                 }
             }
         } else {
             // If input is object, iterate through the keys
-            if (jsonElement.isJsonObject()) {
-                Set<Map.Entry<String, JsonElement>> entrySet = jsonElement
-                        .getAsJsonObject().entrySet();
-                for (Map.Entry<String, JsonElement> entry : entrySet) {
-
+            if (jsonElement.isJsonObject) {
+                val entrySet = jsonElement
+                    .asJsonObject.entrySet()
+                for ((key1, value1) in entrySet) {
                     // If key corresponds to the
-                    String key1 = entry.getKey();
-                    if (key1.equals(key)) {
-                        value = entry.getValue();
-                        return value;
+
+                    if (key1 == key) {
+                        value = value1
+                        return value
                     }
 
                     // Use the entry as input, recursively
-                    value = searchJsonElementByKey(key, entry.getValue());
+                    value = searchJsonElementByKey(key, value1)
                     if (value != null) {
-                        return value;
+                        return value
                     }
                 }
-            }
-
-            // If input is element, check whether it corresponds to the key
-            else {
-                if (jsonElement.toString().equals(key)) {
-                    value = jsonElement;
-                    return value;
+            } else {
+                if (jsonElement.toString() == key) {
+                    value = jsonElement
+                    return value
                 }
             }
         }
-        return value;
+        return value
     }
 }

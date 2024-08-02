@@ -1,94 +1,39 @@
-package com.github.kusaanko.youtubelivechat;
+package com.github.kusaanko.youtubelivechat
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException
 
-public class ChatItem {
-    protected ChatItemType type;
-    protected String authorName;
-    protected String authorChannelID;
-    protected String message;
-    protected List<Object> messageExtended;
-    protected String authorIconURL;
-    protected String id;
-    protected long timestamp;
-    protected List<AuthorType> authorType;
-    protected String memberBadgeIconURL;
-    //For paid message
-    protected int bodyBackgroundColor;
-    protected int bodyTextColor;
-    protected int headerBackgroundColor;
-    protected int headerTextColor;
-    protected int authorNameTextColor;
-    protected String purchaseAmount;
-    //For paid sticker
-    protected String stickerIconURL;
-    protected int backgroundColor;
-    //For ticker paid message
-    protected int endBackgroundColor;
-    protected int durationSec;
-    protected int fullDurationSec;
-    //If moderator enabled
-    protected String contextMenuParams;
-    protected String pinToTopParams;
-    protected String chatDeleteParams; // can be executed by author too
-    protected String timeBanParams;
-    protected String userBanParams;
-    protected String userUnbanParams;
-    //Connected chat
-    protected YouTubeLiveChat liveChat;
-
-    /**
-     * @deprecated {@link #ChatItem(YouTubeLiveChat liveChat)}
-     */
-    @Deprecated
-    protected ChatItem() {
-        this(null);
-    }
-
-    protected ChatItem(YouTubeLiveChat liveChat) {
-        this.authorType = new ArrayList<>();
-        this.authorType.add(AuthorType.NORMAL);
-        this.type = ChatItemType.MESSAGE;
-        this.liveChat = liveChat;
-    }
-
+class ChatItem(liveChat: YouTubeLiveChat?) {
     /**
      * Get type of this item.
      *
      * @return Type of this item
      */
-    public ChatItemType getType() {
-        return this.type;
-    }
+    @JvmField
+    var type: ChatItemType
 
     /**
      * Get author name.
      *
      * @return Author name
      */
-    public String getAuthorName() {
-        return this.authorName;
-    }
+    @JvmField
+    var authorName: String? = null
 
     /**
      * Get author's channel id.
      *
      * @return Author's channel id
      */
-    public String getAuthorChannelID() {
-        return this.authorChannelID;
-    }
+    @JvmField
+    var authorChannelID: String? = null
 
     /**
      * Get message in String
      *
      * @return Message
      */
-    public String getMessage() {
-        return this.message;
-    }
+    @JvmField
+    var message: String? = null
 
     /**
      * Get list of extended messages.
@@ -96,81 +41,34 @@ public class ChatItem {
      *
      * @return List of extended messages
      */
-    public List<Object> getMessageExtended() {
-        return this.messageExtended;
-    }
+    @JvmField
+    var messageExtended: List<Any>? = null
 
     /**
      * Get author's icon url.
      *
      * @return Author's icon url
      */
-    public String getAuthorIconURL() {
-        return this.authorIconURL;
-    }
+    @JvmField
+    var authorIconURL: String? = null
 
     /**
      * Get id.
      *
      * @return Id
      */
-    public String getId() {
-        return this.id;
-    }
+    @JvmField
+    var id: String? = null
 
     /**
      * Get timestamp of this item.
      *
      * @return Timestamp in UNIX time
      */
-    public long getTimestamp() {
-        return this.timestamp;
-    }
-
-    /**
-     * Get author types in List.
-     *
-     * @return List of AuthorType
-     */
-    public List<AuthorType> getAuthorType() {
-        return this.authorType;
-    }
-
-    /**
-     * Is this message's author verified?
-     *
-     * @return If this message's author is verified, returns true.
-     */
-    public boolean isAuthorVerified() {
-        return this.authorType.contains(AuthorType.VERIFIED);
-    }
-
-    /**
-     * Is this message's author owner?
-     *
-     * @return If this message's author is owner, returns true.
-     */
-    public boolean isAuthorOwner() {
-        return this.authorType.contains(AuthorType.OWNER);
-    }
-
-    /**
-     * Is this message's author moderator?
-     *
-     * @return If this message's author is moderator, returns true.
-     */
-    public boolean isAuthorModerator() {
-        return this.authorType.contains(AuthorType.MODERATOR);
-    }
-
-    /**
-     * Is this message's author member?
-     *
-     * @return If this message's author is member, returns true.
-     */
-    public boolean isAuthorMember() {
-        return this.authorType.contains(AuthorType.MEMBER);
-    }
+    @JvmField
+    var timestamp: Long = 0
+    @JvmField
+    var authorType: MutableList<AuthorType> = ArrayList()
 
     /**
      * Get member badge icon url.
@@ -178,87 +76,57 @@ public class ChatItem {
      *
      * @return Member badge icon url
      */
-    public String getMemberBadgeIconURL() {
-        return this.memberBadgeIconURL;
-    }
+    @JvmField
+    var memberBadgeIconURL: String? = null
 
     /**
      * Get background color of body in int.
      *
      * @return Color in int
      */
-    public int getBodyBackgroundColor() {
-        return this.bodyBackgroundColor;
-    }
+    //For paid message
+    @JvmField
+    var bodyBackgroundColor: Int = 0
 
     /**
      * Get text color of background in int.
      *
      * @return Color in int
      */
-    public int getBodyTextColor() {
-        return this.bodyTextColor;
-    }
+    @JvmField
+    var bodyTextColor: Int = 0
 
     /**
      * Get header background color in int.
      *
      * @return Color in int
      */
-    public int getHeaderBackgroundColor() {
-        return this.headerBackgroundColor;
-    }
+    @JvmField
+    var headerBackgroundColor: Int = 0
 
     /**
      * Get header color in int.
      *
      * @return Color in int
      */
-    public int getHeaderTextColor() {
-        return this.headerTextColor;
-    }
-
-    /**
-     * Get purchase amount of this paid message
-     *
-     * @return Amount of money(example ￥100)
-     */
-    public String getPurchaseAmount() {
-        return this.purchaseAmount;
-    }
+    @JvmField
+    var headerTextColor: Int = 0
 
     /**
      * Get text color of drawing author name in int.
      *
      * @return Color in int
      */
-    public int getAuthorNameTextColor() {
-        return this.authorNameTextColor;
-    }
-
-    public int getEndBackgroundColor() {
-        return this.endBackgroundColor;
-    }
+    @JvmField
+    var authorNameTextColor: Int = 0
 
     /**
-     * Get elapsed time from starting viewing this paid message in seconds.
-     * You can use if getType() == PAID_MESSAGE
+     * Get purchase amount of this paid message
      *
-     * @return Elapsed time from starting viewing this paid message in seconds
+     * @return Amount of money(example ￥100)
      */
-    public int getDurationSec() {
-        return this.durationSec;
-    }
-
-    /**
-     * Get full duration of paid message viewing in seconds.
-     * You can use if getType() == PAID_MESSAGE
-     *
-     * @return Full duration of paid message viewing in seconds
-     */
-    public int getFullDurationSec() {
-        return this.fullDurationSec;
-    }
+    @JvmField
+    var purchaseAmount: String? = null
 
     /**
      * Get sticker icon url.
@@ -266,9 +134,9 @@ public class ChatItem {
      *
      * @return Sticker icon url
      */
-    public String getStickerIconURL() {
-        return stickerIconURL;
-    }
+    //For paid sticker
+    @JvmField
+    var stickerIconURL: String? = null
 
     /**
      * Get background color in int.
@@ -276,12 +144,99 @@ public class ChatItem {
      *
      * @return Background color in int
      */
-    public int getBackgroundColor() {
-        return backgroundColor;
+    @JvmField
+    var backgroundColor: Int = 0
+
+    //For ticker paid message
+    @JvmField
+    var endBackgroundColor: Int = 0
+
+    /**
+     * Get elapsed time from starting viewing this paid message in seconds.
+     * You can use if getType() == PAID_MESSAGE
+     *
+     * @return Elapsed time from starting viewing this paid message in seconds
+     */
+    @JvmField
+    var durationSec: Int = 0
+
+    /**
+     * Get full duration of paid message viewing in seconds.
+     * You can use if getType() == PAID_MESSAGE
+     *
+     * @return Full duration of paid message viewing in seconds
+     */
+    @JvmField
+    var fullDurationSec: Int = 0
+
+    //If moderator enabled
+    @JvmField
+    var contextMenuParams: String? = null
+    @JvmField
+    var pinToTopParams: String? = null
+    @JvmField
+    var chatDeleteParams: String? = null // can be executed by author too
+    @JvmField
+    var timeBanParams: String? = null
+    @JvmField
+    var userBanParams: String? = null
+    @JvmField
+    var userUnbanParams: String? = null
+
+    //Connected chat
+    protected var liveChat: YouTubeLiveChat?
+
+    @Deprecated("{@link #ChatItem(YouTubeLiveChat liveChat)}")
+    protected constructor() : this(null)
+
+    init {
+        authorType.add(AuthorType.NORMAL)
+        this.type = ChatItemType.MESSAGE
+        this.liveChat = liveChat
     }
 
-    @Override
-    public String toString() {
+    /**
+     * Get author types in List.
+     *
+     * @return List of AuthorType
+     */
+    fun getAuthorType(): List<AuthorType> {
+        return this.authorType
+    }
+
+    val isAuthorVerified: Boolean
+        /**
+         * Is this message's author verified?
+         *
+         * @return If this message's author is verified, returns true.
+         */
+        get() = authorType.contains(AuthorType.VERIFIED)
+
+    val isAuthorOwner: Boolean
+        /**
+         * Is this message's author owner?
+         *
+         * @return If this message's author is owner, returns true.
+         */
+        get() = authorType.contains(AuthorType.OWNER)
+
+    val isAuthorModerator: Boolean
+        /**
+         * Is this message's author moderator?
+         *
+         * @return If this message's author is moderator, returns true.
+         */
+        get() = authorType.contains(AuthorType.MODERATOR)
+
+    val isAuthorMember: Boolean
+        /**
+         * Is this message's author member?
+         *
+         * @return If this message's author is member, returns true.
+         */
+        get() = authorType.contains(AuthorType.MEMBER)
+
+    override fun toString(): String {
         return "ChatItem{" +
                 "type=" + type +
                 ", authorName='" + authorName + '\'' +
@@ -304,7 +259,7 @@ public class ChatItem {
                 ", endBackgroundColor=" + endBackgroundColor +
                 ", durationSec=" + durationSec +
                 ", fullDurationSec=" + fullDurationSec +
-                '}';
+                '}'
     }
 
     /**
@@ -315,8 +270,9 @@ public class ChatItem {
      * @throws IOException           Http request error
      * @throws IllegalStateException The IDs are not set or permission denied error
      */
-    public void delete() throws IOException {
-        liveChat.deleteMessage(this);
+    @Throws(IOException::class)
+    fun delete() {
+        liveChat?.deleteMessage(this)
     }
 
     /**
@@ -327,22 +283,24 @@ public class ChatItem {
      * @throws IOException           Http request error
      * @throws IllegalStateException The IDs are not set or permission denied error
      */
-    public void timeoutAuthor() throws IOException {
-        liveChat.banAuthorTemporarily(this);
+    @Throws(IOException::class)
+    fun timeoutAuthor() {
+        liveChat?.banAuthorTemporarily(this)
     }
 
     /**
      * Ban chat author permanently from the channel (+ delete chat).
      * You need to set user data using setUserData() before calling this method.
      * User must be either moderator or owner.
-     * <br>
-     * <b>**Use with cautions!!**</b> It is recommended to store these banned ChatItem so you can unban later.
+     * <br></br>
+     * ****Use with cautions!!**** It is recommended to store these banned ChatItem so you can unban later.
      *
      * @throws IOException           Http request error
      * @throws IllegalStateException The IDs are not set or permission denied error
      */
-    public void banAuthor() throws IOException {
-        liveChat.banUserPermanently(this);
+    @Throws(IOException::class)
+    fun banAuthor() {
+        liveChat!!.banUserPermanently(this)
     }
 
     /**
@@ -353,8 +311,9 @@ public class ChatItem {
      * @throws IOException           Http request error
      * @throws IllegalStateException The IDs are not set or permission denied error
      */
-    public void unbanAuthor() throws IOException {
-        liveChat.unbanUser(this);
+    @Throws(IOException::class)
+    fun unbanAuthor() {
+        liveChat!!.unbanUser(this)
     }
 
 
@@ -366,7 +325,8 @@ public class ChatItem {
      * @throws IOException           Http request error
      * @throws IllegalStateException The IDs are not set or permission denied error
      */
-    public void pinAsBanner() throws IOException {
-        liveChat.pinMessage(this);
+    @Throws(IOException::class)
+    fun pinAsBanner() {
+        liveChat!!.pinMessage(this)
     }
 }

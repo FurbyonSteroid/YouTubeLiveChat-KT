@@ -1,37 +1,26 @@
-package com.github.kusaanko.youtubelivechat;
+package com.github.kusaanko.youtubelivechat
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
 
-public class LiveBroadcastDetails {
+class LiveBroadcastDetails {
     @SerializedName("isLiveNow")
     @Expose
-    public Boolean isLiveNow;
+    var liveNow: Boolean? = null
+
     @SerializedName("startTimestamp")
     @Expose
-    public String startTimestamp;
+    var startTimestamp: String? = null
+
     @SerializedName("endTimestamp")
     @Expose
-    public String endTimestamp;
+    var endTimestamp: String? = null
 
-    public Boolean getLiveNow() {
-        return isLiveNow;
-    }
-
-    public String getStartTimestamp() {
-        return startTimestamp;
-    }
-
-    public String getEndTimestamp() {
-        return endTimestamp;
-    }
-
-    @Override
-    public String toString() {
+    override fun toString(): String {
         return "LiveBroadcastDetails{" +
-                "isLiveNow=" + isLiveNow +
+                "isLiveNow=" + liveNow +
                 ", startTimestamp='" + startTimestamp + '\'' +
                 ", endTimestamp='" + endTimestamp + '\'' +
-                '}';
+                '}'
     }
 }

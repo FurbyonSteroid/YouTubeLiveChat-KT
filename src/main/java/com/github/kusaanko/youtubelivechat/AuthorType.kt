@@ -1,6 +1,6 @@
-package com.github.kusaanko.youtubelivechat;
+package com.github.kusaanko.youtubelivechat
 
-public enum AuthorType {
+enum class AuthorType {
     NORMAL,
     VERIFIED,
     OWNER,

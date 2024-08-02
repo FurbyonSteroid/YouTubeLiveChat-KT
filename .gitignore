@@ -3,3 +3,5 @@ src/test
 /bin/
 out
 build
+.gradle
+.idea

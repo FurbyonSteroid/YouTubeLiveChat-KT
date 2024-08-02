@@ -1,14 +1,8 @@
-package com.github.kusaanko.youtubelivechat;
+package com.github.kusaanko.youtubelivechat
 
-public class ChatItemDelete {
-    protected String targetId;
-    protected String message;
-
-    public String getTargetId() {
-        return targetId;
-    }
-
-    public String getMessage() {
-        return message;
-    }
+class ChatItemDelete {
+    @JvmField
+    var targetId: String? = null
+    @JvmField
+    var message: String? = null
 }
